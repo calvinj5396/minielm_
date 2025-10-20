@@ -1,0 +1,77 @@
+# ============ API配置 (关键！) ============
+api:
+  provider: "openai"  # 可选: "openai" or "anthropic"
+  
+  # OpenAI配置 (推荐，便宜)
+  openai:
+    api_key: "sk-YOUR_OPENAI_KEY_HERE"  # 👈 在这里填写你的OpenAI API Key
+    model: "gpt-4o-mini"  # 最便宜的模型
+    base_url: "https://api.openai.com/v1"  # 如果用中转服务改这里
+  
+  # Anthropic配置 (备选)
+  anthropic:
+    api_key: "sk-ant-YOUR_ANTHROPIC_KEY_HERE"  # 👈 或填写Claude API Key
+    model: "claude-3-haiku-20240307"
+
+# ============ 模型配置 ============
+models:
+  teacher:
+    name: "google/flan-t5-large"  # 780M参数
+    load_in_8bit: false
+  
+  student:
+    name: "google/flan-t5-base"   # 250M参数
+    load_in_8bit: false
+  
+  relevance_scorer:
+    name: "bert-base-uncased"     # 110M参数
+
+# ============ 数据配置 ============
+data:
+  esci_dataset: "amazon_esci"
+  locale: "us"
+  q2q_min_common_products: 5
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+
+# ============ 训练配置 ============
+training:
+  # SFT配置
+  sft:
+    num_epochs: 3
+    batch_size: 8
+    learning_rate: 5e-5
+    gradient_accumulation_steps: 4
+    fp16: true
+  
+  # 知识蒸馏配置
+  distillation:
+    num_epochs: 3
+    batch_size: 8
+    learning_rate: 3e-5
+    temperature: 2.0
+    fp16: true
+  
+  # 在线DPO配置
+  dpo:
+    iterations: 500
+    batch_size: 16
+    learning_rate: 1e-5
+    beta: 0.1
+    llm_eval_frequency: 10  # 每10步调用一次LLM
+
+# ============ 评估配置 ============
+evaluation:
+  num_test_queries: 100
+  num_rewrites_per_query: 10
+  elasticsearch_top_k: 20
+
+# ============ 系统配置 ============
+system:
+  output_dir: "./outputs"
+  checkpoint_dir: "./checkpoints"
+  log_dir: "./logs"
+  use_wandb: false  # 是否使用W&B记录实验
+  wandb_project: "minielm"
+  seed: 42
